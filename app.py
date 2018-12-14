@@ -55,6 +55,50 @@ def load_data(path):
         print(f'{path} loaded.')
     return data_dict
 
+def get_score_bar(data_dict):
+    frame_num = 0
+    video_info_df = data_dict["video_info_df"]
+    shot = video_info_df["class_str_pred"][frame_num]
+    x_score = f"{shot}"
+    y_score = video_info_df["Scores"][frame_num]
+    # Add Text information
+    y_text = [f"{round(value*100)}% confidence" for value in video_info_df["Scores"].tolist()][frame_num]
+    colors = "rgb(100,100,100)"
+    return np.array(x_score), np.array(y_score), y_text, colors
+
+def get_heatmap(data_dict):
+    frame_num = 0
+    video_df = data_dict["video_info_df"]
+    classes_padded = data_dict["classes_padded"]
+    root_round = data_dict["root_round"]
+    classes_matrix = data_dict["classes_matrix"]
+    
+    # The list of scores
+    score_list = []#np.array(video_df["Scores"][frame_num])
+    for el in classes_padded:
+        if el in video_df["class_str_pred"][frame_num]:
+            score_list.append(video_df["Scores"][frame_num])
+        else:
+            score_list.append(0)
+
+    # Generate the score matrix, and flip it for visual
+    score_matrix = np.reshape(score_list, (-1, int(root_round)))
+    score_matrix = np.flip(score_matrix, axis=0)
+    # color scale
+    colorscale = [[0, '#ffffff'], [1,'#f71111']]
+    font_colors = ['#3c3636', '#efecee']
+    # Hover Text
+    hover_text = [f'{score * 100:.2f}% confidence' for score in score_list]
+    hover_text = np.reshape(hover_text, (-1, int(root_round)))
+    hover_text = np.flip(hover_text, axis=0)
+    return score_matrix, classes_matrix, colorscale, font_colors, hover_text
+
+# local load
+local_data_dict = load_data("data/match_7.csv") 
+x_score, y_score, y_text, colors = get_score_bar(local_data_dict)
+scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(local_data_dict)
+print(scoreMatrix, classMatrix, colorScale, fontColors, hoverText)
+
 # Main App
 app.layout = html.Div([
     # Banner display
@@ -112,14 +156,63 @@ app.layout = html.Div([
                     style={'margin': '30px 20px 15px 20px'}
                     )
                 ],
-                className="four columns", # why four?
+                className="six columns", # why four?
                 style={'margin-bottom': '20px'}
             ),
 
-            html.Div(id="div-visual-mode", className="four columns"),
-
-            html.Div(id="div-detection-mode", className="four columns")
+            # Heatmap Area
+            html.Div([
+                dcc.Graph(
+                    style={'height': '55vh'},
+                    figure={
+                        'data': [
+                            ff.create_annotated_heatmap(
+                                scoreMatrix,
+                                annotation_text=classMatrix,
+                                colorscale=colorScale,
+                                font_colors=fontColors,
+                                hoverinfo='text',
+                                text=hoverText,
+                                zmin=0,
+                                zmax=1
+                            )
+                        ],
+                        'layout': {
+                            'title': "Confidence Level of Action Classification",
+                            'margin': go.layout.Margin(l=20, r=20, t=57, b=30)
+                        }
+                    }
+                ),
             ],
+                className="six columns",
+            ),
+            # Classification Score
+            html.Div([
+                dcc.Graph(
+                    style={'height': '50vh'},
+                    figure={
+                        'data':[
+                            go.Bar(
+                                x=x_score,
+                                y=y_score,
+                                text=y_text,
+                                name="Classification Score",
+                                hoverinfo='x+text',
+                                #marker=go.Marker(color=colors,line=dict(color='rgb(79, 85, 91)', width=1))
+                            )
+                        ],
+                        'layout':{
+                            'title': "Classification Score of Player's Shot",
+                            'showlegend': False,
+                            'margin': go.layout.Margin(l=70, r=40, t=50, b=30),
+                            'yaxis': {'title': 'Score', 'range': [0,1]},
+                            }
+                        }
+                    ),
+                ],
+                className="six columns"
+            )
+        ],
             className="row"
         ),
 
@@ -151,111 +244,12 @@ def load_all_match():
     }
 
 # Video Selectioin
-@app.callback(Output("div-video-player", "children"),
-             [Input('dropdown-video-selection', 'value')])
-def select_video(video):
-    url = url_dict[video]
-    layout = go.Layout(
-            title="Confidence Level of Action Segmentation",
-            margin=go.layout.Margin(l=20,  r=20, t=57, b=30)
-    )
+#@app.callback(Output("div-video-player", "children"),
+#             [Input('dropdown-video-selection', 'value')])
+# def select_video(video):
+#     url = url_dict[video]
+#    return go.Figure(data=[go.Bar()], layout=layout)
 
-    return go.Figure(data=[go.Bar()], layout=layout)
-        #rpd.my_Player(id='video-display',url=url, width='100%',
-            # height='50vh', controls=True, seekTo=0, volume=1)
-
-# Graph View Selection
-@app.callback(Output("div-visual-mode", "children"),
-              [Input("dropdown-graph-view-mode", "value")])
-def update_visual_mode(value):
-    if value == "visual":
-        return [
-            dcc.Interval(
-                id="interval-visual-mode",
-                interval=700,
-                n_intervals=0
-            ),
-
-            dcc.Graph(
-                style={'height': '55vh'},
-                id="heatmap-confidence"
-            ),
-
-            dcc.Graph(
-                style={'height': '40vh'},
-                id="pie-object-count"
-            )
-        ]
-
-    else:
-        return []
-
-
-# Updating Figures
-@app.callback(Output("heatmap-confidence", "figure"),
-             [Input('dropdown-video-selection', 'value')],# Input("interval-detection-mode", "n_interval")],
-             [#State('dropdown-video-selection', 'value'),
-              State('slider-frame-position', 'value')])
-def update_heatmap_confidence(video, position):
-    layout = go.Layout(
-            title="Confidence Level of Action Segmentation",
-            margin=go.Margin(l=20,  r=20, t=57, b=30)
-    )
-    # Load variables from the data dictionary
-    video_info_df = data_dict[video]["video_info_df"]
-    classes_padded = data_dict[video]["classes_padded"]
-    root_round = data_dict[video]["root_round"]
-    classes_matrix = data_dict[video]["classes_matrix"]
-
-    # Select the subset of the dataset that correspond to the currenct frame
-    #frame_df = video_info_df[video_info_df["Frames"] == current_frame]
-    frame_df = video_info_df.iloc[0,:]
-    # Remove duplicate, keep the top result
-    frame_no_dup = frame_df[["class_str_pred", "Scores"]].drop_duplicates("class_str_pred")
-    frame_no_dup.set_index("class_str_pred", inplace=True)
-    
-    # The list of scores
-    score_list = []
-    for el in classes_padded:
-        if el in frame_no_dup.index.values:
-            score_list.append(frame_no_dup.loc[el][0])
-        else:
-            score_list.append(0)
-    
-    # Generate the score matrix, and flip it for visual
-    score_matrix = np.reshape(score_list, (-1, int(root_round)))
-    score_matrix = np.flip(score_matrix, axis=0)
-
-    # We set the color scale to white if there's nothing in the frame_no_dup
-    if frame_no_dup.shape != (0, 1):
-        colorscale = [[0, '#ffffff'], [1,'#f71111']]
-        font_colors = ['#3c3636', '#efecee']
-    else:
-        colorscale = [[0, '#ffffff'], [1,'#ffffff']]
-        font_colors = ['#3c3636']
-
-    hover_text = [f"{score * 100:.2f}% confidence" for score in score_list]
-    hover_text = np.reshape(hover_text, (-1, int(root_round)))
-    hover_text = np.flip(hover_text, axis=0)
-
-    pt = ff.create_annotated_heatmap(
-        score_matrix,
-        annotation_text=classes_matrix,
-        colorscale=colorscale,
-        font_colors=font_colors,
-        hoverinfo='text',
-        text=hover_text,
-        zmin=0,
-        zmax=1
-    )
-
-    pt.layout.title = layout.title
-    pt.layout.margin = layout.margin
-
-    return pt
-
-    # Returns empty figure
-    #return go.Figure(data[go.Pie()], layout=layout)
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
