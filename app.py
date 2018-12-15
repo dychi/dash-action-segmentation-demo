@@ -2,7 +2,6 @@
 import cv2
 import numpy as np
 import pandas as pd
-from PIL import ImageColor
 
 import dash
 import dash_core_components as dcc
@@ -12,7 +11,7 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 import utils.desc_card as drc
-from utils.video import PlayVideo
+#from utils.video import PlayVideo
 
 DEBUG = True
 FRAME_RATE = 24.0
@@ -55,8 +54,7 @@ def load_data(path):
         print(f'{path} loaded.')
     return data_dict
 
-def get_score_bar(data_dict):
-    frame_num = 0
+def get_score_bar(data_dict, frame_num):
     video_info_df = data_dict["video_info_df"]
     shot = video_info_df["class_str_pred"][frame_num]
     x_score = f"{shot}"
@@ -66,8 +64,7 @@ def get_score_bar(data_dict):
     colors = "rgb(100,100,100)"
     return np.array(x_score), np.array(y_score), y_text, colors
 
-def get_heatmap(data_dict):
-    frame_num = 0
+def get_heatmap(data_dict, frame_num):
     video_df = data_dict["video_info_df"]
     classes_padded = data_dict["classes_padded"]
     root_round = data_dict["root_round"]
@@ -94,10 +91,10 @@ def get_heatmap(data_dict):
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
 # local load
-local_data_dict = load_data("data/match_7.csv") 
-x_score, y_score, y_text, colors = get_score_bar(local_data_dict)
-scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(local_data_dict)
-print(scoreMatrix, classMatrix, colorScale, fontColors, hoverText)
+#local_data_dict = load_data("data/match_7.csv") 
+# x_score, y_score, y_text, colors = get_score_bar(local_data_dict, frame_num=0)
+#scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(local_data_dict, frame_num=0)
+#print(scoreMatrix, classMatrix, colorScale, fontColors, hoverText)
 
 # Main App
 app.layout = html.Div([
@@ -161,57 +158,10 @@ app.layout = html.Div([
             ),
 
             # Heatmap Area
-            html.Div([
-                dcc.Graph(
-                    style={'height': '55vh'},
-                    figure={
-                        'data': [
-                            ff.create_annotated_heatmap(
-                                scoreMatrix,
-                                annotation_text=classMatrix,
-                                colorscale=colorScale,
-                                font_colors=fontColors,
-                                hoverinfo='text',
-                                text=hoverText,
-                                zmin=0,
-                                zmax=1
-                            )
-                        ],
-                        'layout': {
-                            'title': "Confidence Level of Action Classification",
-                            'margin': go.layout.Margin(l=20, r=20, t=57, b=30)
-                        }
-                    }
-                ),
-            ],
-                className="six columns",
-            ),
+            html.Div(id="heatmap-confidence", className="six columns"),
+
             # Classification Score
-            html.Div([
-                dcc.Graph(
-                    style={'height': '50vh'},
-                    figure={
-                        'data':[
-                            go.Bar(
-                                x=x_score,
-                                y=y_score,
-                                text=y_text,
-                                name="Classification Score",
-                                hoverinfo='x+text',
-                                #marker=go.Marker(color=colors,line=dict(color='rgb(79, 85, 91)', width=1))
-                            )
-                        ],
-                        'layout':{
-                            'title': "Classification Score of Player's Shot",
-                            'showlegend': False,
-                            'margin': go.layout.Margin(l=70, r=40, t=50, b=30),
-                            'yaxis': {'title': 'Score', 'range': [0,1]},
-                            }
-                        }
-                    ),
-                ],
-                className="six columns"
-            )
+            html.Div(id="bar-score-graph", className="six columns")
         ],
             className="row"
         ),
@@ -246,10 +196,73 @@ def load_all_match():
 # Video Selectioin
 #@app.callback(Output("div-video-player", "children"),
 #             [Input('dropdown-video-selection', 'value')])
-# def select_video(video):
+#def select_video(video):
 #     url = url_dict[video]
 #    return go.Figure(data=[go.Bar()], layout=layout)
 
+# Graph View 
+#@app.callback(Output("div-visual-mode", "children"),
+#             [Input("slider-frame-position", "value")])
+#def update_visual(value):
+#    return [
+#            dcc.Graph(
+#                style={'height': '55vh'},
+#                id="heatmap-confidence"
+#            ),
+#            dcc.Graph(
+#                style={'height': '40vh'},
+#                id="bar-score-graph"
+#            )
+#    ]
+
+# Updating Heatmap
+@app.callback(Output("heatmap-confidence", "figure"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selectioin", "value")])
+def update_heatmap(frame, video):
+    layout = go.Layout(
+        title="Confidence Level of Action Classification",
+        margin=Margin(l=20, r=20, t=57, b=30)
+    )
+    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame_num=frame)
+
+    pt = ff.create_annotated_heatmap(
+            scoreMatrix,
+            annotation_text=classMatrix,
+            colorscale=colorScale,
+            font_colors=fontColors,
+            hoverinfo='text',
+            text=hoverText,
+            zmin=0,
+            zmax=1
+    )
+    pt.layout.title = layout.title
+    pt.layout.margin = layout.margin
+
+    return pt
+
+# Updating Bar Score
+@app.callback(Output("bar-score-graph", "figure"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selection", "value")])
+def update_score_bar(frame, video):
+    layout = go.Layout(
+        title="Classification Score of Player's Shot",
+        showlegend=False,
+        margin=go.layout.Margin(l=70, r=40, t=50, b=30),
+        yaxis={'title': 'Score', 'range': [0,1]}
+        )
+    x_score, y_score, y_text, colors = get_score_bar(data_dict[video], frame)
+
+    bar = go.Bar(
+            x=x_score,
+            y=y_score,
+            text=y_text,
+            name="Classification Score",
+            hoverinfo="x+text",
+            #marker=go.Marker(color=colors, line=dict(color='rgb(79,85,91)', width=1))
+        )
+    return go.Figure(data=[bar], layout=layout)
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
