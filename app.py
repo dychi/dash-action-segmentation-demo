@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+import os
 import cv2
 import numpy as np
 import pandas as pd
+from glob import glob
+from pathlib import Path
 
+import flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -90,11 +94,17 @@ def get_heatmap(data_dict, frame_num):
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
+def get_frame_name(data_dict, frame_num):
+    video_df = data_dict["video_info_df"]
+    frame_name = video_df["Frames"][frame_num]
+    return frame_name
 # local load
 #local_data_dict = load_data("data/match_7.csv") 
-# x_score, y_score, y_text, colors = get_score_bar(local_data_dict, frame_num=0)
+#x_score, y_score, y_text, colors = get_score_bar(local_data_dict, frame_num=0)
 #scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(local_data_dict, frame_num=0)
 #print(scoreMatrix, classMatrix, colorScale, fontColors, hoverText)
+image_directory = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
+list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(image_directory))]
 
 # Main App
 app.layout = html.Div([
@@ -117,7 +127,14 @@ app.layout = html.Div([
             html.Div([
                 html.Div([
                     # Write player() insted of rdp.my_Player()
-
+                    html.Img(
+                        style={
+                            'width': 600,
+                            'height': 400,
+                            'margin': '30px 20px 15px 20px'
+                        },
+                        id="images",
+                        )
                     ],
                     id='div-video-player',
                     style={
@@ -153,16 +170,14 @@ app.layout = html.Div([
                     style={'margin': '30px 20px 15px 20px'}
                     )
                 ],
-                className="six columns", # why four?
+                className="six columns",
                 style={'margin-bottom': '20px'}
             ),
 
-            # Heatmap Area
-            html.Div(id="heatmap-confidence", className="six columns"),
-
-            # Classification Score
-            html.Div(id="bar-score-graph", className="six columns")
+            #  Heatmap Area and Classification Score
+            html.Div(id="div-visual-mode", className="six columns")
         ],
+            
             className="row"
         ),
 
@@ -193,6 +208,22 @@ def load_all_match():
         #'match_8': 'path to mp4'
     }
 
+# Images Display
+@app.callback(Output("images", "src"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selection", "value")])
+def update_image_src(frame, video):
+    video_df = data_dict[video]["video_info_df"]
+    frame_name = video_df["Frames"][frame]
+    return image_directory + frame_name
+
+@app.server.route('{}<image_path>.jpg'.format(image_directory))
+def serve_image(image_path):
+    img_name = '{}.jpg'.format(image_path)
+    if img_name not in list_of_imgs:
+        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
+    return flask.send_from_directory(image_directory, img_name)
+
 # Video Selectioin
 #@app.callback(Output("div-video-player", "children"),
 #             [Input('dropdown-video-selection', 'value')])
@@ -201,45 +232,19 @@ def load_all_match():
 #    return go.Figure(data=[go.Bar()], layout=layout)
 
 # Graph View 
-#@app.callback(Output("div-visual-mode", "children"),
-#             [Input("slider-frame-position", "value")])
-#def update_visual(value):
-#    return [
-#            dcc.Graph(
-#                style={'height': '55vh'},
-#                id="heatmap-confidence"
-#            ),
-#            dcc.Graph(
-#                style={'height': '40vh'},
-#                id="bar-score-graph"
-#            )
-#    ]
-
-# Updating Heatmap
-@app.callback(Output("heatmap-confidence", "figure"),
-             [Input("slider-frame-position", "value")],
-             [State("dropdown-video-selectioin", "value")])
-def update_heatmap(frame, video):
-    layout = go.Layout(
-        title="Confidence Level of Action Classification",
-        margin=Margin(l=20, r=20, t=57, b=30)
-    )
-    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame_num=frame)
-
-    pt = ff.create_annotated_heatmap(
-            scoreMatrix,
-            annotation_text=classMatrix,
-            colorscale=colorScale,
-            font_colors=fontColors,
-            hoverinfo='text',
-            text=hoverText,
-            zmin=0,
-            zmax=1
-    )
-    pt.layout.title = layout.title
-    pt.layout.margin = layout.margin
-
-    return pt
+@app.callback(Output("div-visual-mode", "children"),
+             [Input("slider-frame-position", "value")])
+def update_visual(value):
+    return [
+            dcc.Graph(
+                style={'height': '55vh'},
+                id="heatmap-confidence"
+            ),
+            dcc.Graph(
+                style={'height': '40vh'},
+                id="bar-score-graph"
+            )
+    ]
 
 # Updating Bar Score
 @app.callback(Output("bar-score-graph", "figure"),
@@ -263,6 +268,33 @@ def update_score_bar(frame, video):
             #marker=go.Marker(color=colors, line=dict(color='rgb(79,85,91)', width=1))
         )
     return go.Figure(data=[bar], layout=layout)
+
+'''
+# Updating Heatmap
+@app.callback(Output("heatmap-confidence", "figure"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selectioin", "value")])
+def update_heatmap(frame, video):
+    layout = go.Layout(
+        title="Confidence Level of Action Classification",
+        margin=Margin(l=20, r=20, t=57, b=30)
+    )
+    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame)
+
+    pt = ff.create_annotated_heatmap(
+            scoreMatrix,
+            annotation_text=classMatrix,
+            colorscale=colorScale,
+            font_colors=fontColors,
+            hoverinfo='text',
+            text=hoverText,
+            zmin=0,
+            zmax=1
+    )
+    pt.layout.title = layout.title
+    pt.layout.margin = layout.margin
+    return pt
+'''
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
