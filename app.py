@@ -15,10 +15,8 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 import utils.desc_card as drc
-#from utils.video import PlayVideo
 
 DEBUG = True
-FRAME_RATE = 24.0
 
 app = dash.Dash(__name__)
 server = app.server
@@ -196,17 +194,12 @@ app.layout = html.Div([
 @app.server.before_first_request
 def load_all_match():
     global data_dict, url_dict
-
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
         'match_7': load_data("data/match_7.csv"),
         #'match_8': load_data("data/match_8.csv")
     }
 
-    url_dict = {
-        'match_7': "video/bad_youtube.mp4",
-        #'match_8': 'path to mp4'
-    }
 
 # Images Display
 @app.callback(Output("images", "src"),
@@ -224,12 +217,6 @@ def serve_image(image_path):
         raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
     return flask.send_from_directory(image_directory, img_name)
 
-# Video Selectioin
-#@app.callback(Output("div-video-player", "children"),
-#             [Input('dropdown-video-selection', 'value')])
-#def select_video(video):
-#     url = url_dict[video]
-#    return go.Figure(data=[go.Bar()], layout=layout)
 
 # Graph View 
 @app.callback(Output("div-visual-mode", "children"),
@@ -269,20 +256,19 @@ def update_score_bar(frame, video):
         )
     return go.Figure(data=[bar], layout=layout)
 
-'''
 # Updating Heatmap
 @app.callback(Output("heatmap-confidence", "figure"),
              [Input("slider-frame-position", "value")],
-             [State("dropdown-video-selectioin", "value")])
+             [State("dropdown-video-selection", "value")])
 def update_heatmap(frame, video):
     layout = go.Layout(
         title="Confidence Level of Action Classification",
-        margin=Margin(l=20, r=20, t=57, b=30)
+        margin=go.Margin(l=20, r=20, t=57, b=30)
     )
     scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame)
 
     pt = ff.create_annotated_heatmap(
-            scoreMatrix,
+            z=scoreMatrix,
             annotation_text=classMatrix,
             colorscale=colorScale,
             font_colors=fontColors,
@@ -294,7 +280,6 @@ def update_heatmap(frame, video):
     pt.layout.title = layout.title
     pt.layout.margin = layout.margin
     return pt
-'''
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
