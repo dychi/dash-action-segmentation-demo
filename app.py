@@ -56,7 +56,7 @@ def load_data(path):
 def get_score_bar(data_dict, frame_num):
     video_info_df = data_dict["video_info_df"]
     shot = video_info_df["class_str_pred"][frame_num]
-    x_score = f"{shot}"
+    x_score = [f"{shot}".format(shot)]
     y_score = video_info_df["Scores"][frame_num]
     # Add Text information
     y_text = [f"{round(value*100)}% confidence" for value in video_info_df["Scores"].tolist()][frame_num]
@@ -148,12 +148,12 @@ app.layout = html.Div([
                         min=0,
                         max=120,
                         marks={i: f'{i}s' for i in range(0,120,10)},
-                        value=50,
+                        value=0,
                         updatemode='drag',
                         id='slider-frame-position'
                         )
                     ],
-                    style={'margin': '15px 30px 30px 30px'} # top right bottom left
+                    style={'margin': '30px 30px 30px 30px'} # top right bottom left
                 ),
                 html.Div([
                     "Video Selection",
@@ -181,7 +181,7 @@ app.layout = html.Div([
                         clearable=False
                     )
                 ],
-                    style={'margin': '30px 20px 15px 20px'}
+                    style={'margin': '15px 20px 15px 20px'}
                 )
             ],
                 className="six columns",
@@ -212,8 +212,12 @@ def load_all_match():
     global data_dict, url_dict
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
-        'match_7': load_data("data/match_7.csv"),
-        #'match_8': load_data("data/match_8.csv")
+        'match_7': load_data("annotations/match_7.csv"),
+        'match_8': load_data("annotations/match_8.csv")
+    }
+    url_dict = {
+            'match_7':  '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/',
+            'match_8': '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_8/',
     }
 
 
@@ -224,7 +228,7 @@ def load_all_match():
 def update_image_src(frame, video):
     video_df = data_dict[video]["video_info_df"]
     frame_name = video_df["Frames"][frame]
-    return image_directory + frame_name
+    return url_dict[video] + frame_name
 
 @app.server.route('{}<image_path>.jpg'.format(image_directory))
 def serve_image(image_path):
