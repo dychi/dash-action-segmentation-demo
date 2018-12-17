@@ -55,13 +55,21 @@ def load_data(path):
 
 def get_score_bar(data_dict, frame_num):
     video_info_df = data_dict["video_info_df"]
-    shot = video_info_df["class_str_pred"][frame_num]
-    x_score = [f"{shot}".format(shot)]
-    y_score = video_info_df["Scores"][frame_num]
+    classes_padded = data_dict["classes_padded"]
+    # The list of scores
+    score_list = []
+    for name in classes_padded:
+        if name == '0':
+            break
+        score_list.append(video_info_df[name][frame_num]) 
+    # Score and labels
+    x_score = [f"{shot}".format(shot) for shot in classes_padded[:-1]]
+    y_score = score_list
     # Add Text information
-    y_text = [f"{round(value*100)}% confidence" for value in video_info_df["Scores"].tolist()][frame_num]
+    y_text = [f"{round(value*100)}% confidence" for value in score_list]
     colors = "rgb(100,100,100)"
     return np.array(x_score), np.array(y_score), y_text, colors
+
 
 def get_heatmap(data_dict, frame_num):
     video_df = data_dict["video_info_df"]
@@ -72,8 +80,8 @@ def get_heatmap(data_dict, frame_num):
     # The list of scores
     score_list = []
     for el in classes_padded:
-        if el in video_df["class_str_pred"][frame_num]:
-            score_list.append(video_df["Scores"][frame_num])
+        if el in video_df["class_str_top1"][frame_num]:
+            score_list.append(video_df["Top1_score"][frame_num])
         else:
             score_list.append(0)
 
