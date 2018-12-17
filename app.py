@@ -113,8 +113,8 @@ app.layout = html.Div([
             src="https://wwwdc05.adst.keio.ac.jp/kj/vi/common/img/thumbF2.png",#"https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
             style={
                 'height': '65px',
-                'margin-top': '5px',
-                'margin-bottom': '5px'
+                'margin-top': '8px',
+                'margin-bottom': '0px'
                 }
         )
     ],
@@ -155,7 +155,7 @@ app.layout = html.Div([
                     dcc.Slider(
                         min=0,
                         max=120,
-                        marks={i: f'{i}s' for i in range(0,120,10)},
+                        marks={i: f'{i}th' for i in range(0,120,10)},
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
@@ -184,7 +184,7 @@ app.layout = html.Div([
                             {'label': 'Auto Play mode', 'value': 'auto'},
                             {'label': 'Analysis mode', 'value': 'analysis'}
                         ],
-                        value='auto',
+                        value='analysis',
                         id='dropdown-play-selection',
                         clearable=False
                     )
@@ -255,11 +255,23 @@ def update_visual(value):
                 style={'height': '40vh'},
                 id="heatmap-confidence"
             ),
+            html.H3(
+                style={'position': 'center'},
+                id="correct-label"
+            ),
             dcc.Graph(
                 style={'height': '40vh'},
                 id="bar-score-graph"
             )
     ]
+
+# Update Correct Label
+@app.callback(Output("correct-label", "children"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selection", "value")])
+def update_label(frame, video):
+    label = data_dict[video]["video_info_df"]["class_str_label"][frame]
+    return 'Correct Label is "{}"'.format(label)
 
 # Updating Bar Score
 @app.callback(Output("bar-score-graph", "figure"),
