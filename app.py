@@ -30,19 +30,16 @@ def load_data(path):
     video_info_df = pd.read_csv(path)
     
     # The list of classes, and the number of classes.
-    classes_list = video_info_df["class_str_pred"].value_counts().index.tolist()
+    classes_list = ['spt', 'fhpt', 'bhpt', 'lbpt', 'smpt', 'rtpt', 'n', 'spb', 'fhpb', 'bhpb', 'lbpb', 'smpb', 'rtpb']
     n_classes = len(classes_list)
     
-    # Get the smallest value needed to the end of the classes list to get a squere matrix
-    root_round = np.ceil(np.sqrt(len(classes_list)))
-    total_size = root_round ** 2
+    # Round the number of classes
+    total_size = np.round(n_classes + 0.5)
     padding_value = int(total_size - n_classes)
     classes_padded = np.pad(classes_list, (0, padding_value), mode='constant')
-
-    # The padded matrix containing all the classes inside a matrix
-    classes_matrix = np.reshape(classes_padded, (int(root_round), int(root_round)))
-
-    # Flip
+    
+    # Class Matrix
+    classes_matrix = np.reshape(classes_padded, (2, int(total_size/2)))
     classes_matrix = np.flip(classes_matrix, axis=0)
 
     data_dict = {
@@ -50,7 +47,7 @@ def load_data(path):
             "n_classes": n_classes,
             "classes_matrix": classes_matrix,
             "classes_padded": classes_padded,
-            "root_round": root_round
+            "total_size": total_size
     }
     if DEBUG:
         print(f'{path} loaded.')
@@ -69,11 +66,11 @@ def get_score_bar(data_dict, frame_num):
 def get_heatmap(data_dict, frame_num):
     video_df = data_dict["video_info_df"]
     classes_padded = data_dict["classes_padded"]
-    root_round = data_dict["root_round"]
+    total_size = data_dict["total_size"]
     classes_matrix = data_dict["classes_matrix"]
     
     # The list of scores
-    score_list = []#np.array(video_df["Scores"][frame_num])
+    score_list = []
     for el in classes_padded:
         if el in video_df["class_str_pred"][frame_num]:
             score_list.append(video_df["Scores"][frame_num])
@@ -81,21 +78,17 @@ def get_heatmap(data_dict, frame_num):
             score_list.append(0)
 
     # Generate the score matrix, and flip it for visual
-    score_matrix = np.reshape(score_list, (-1, int(root_round)))
+    score_matrix = np.reshape(score_list, (-1, int(total_size/2)))
     score_matrix = np.flip(score_matrix, axis=0)
     # color scale
     colorscale = [[0, '#ffffff'], [1,'#f71111']]
     font_colors = ['#3c3636', '#efecee']
     # Hover Text
     hover_text = [f'{score * 100:.2f}% confidence' for score in score_list]
-    hover_text = np.reshape(hover_text, (-1, int(root_round)))
+    hover_text = np.reshape(hover_text, (-1, int(total_size/2)))
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
-def get_frame_name(data_dict, frame_num):
-    video_df = data_dict["video_info_df"]
-    frame_name = video_df["Frames"][frame_num]
-    return frame_name
 
 image_directory = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
 list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(image_directory))]
@@ -106,13 +99,27 @@ app.layout = html.Div([
     html.Div([
         html.H2(
             'Action Segmentation Explorer',
-            id='title'
+            id='title',
         ),
         html.Img(
-            src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
+            src="https://wwwdc05.adst.keio.ac.jp/kj/vi/common/img/thumbF2.png",#"https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
+            style={
+                'height': '65px',
+                'margin-top': '5px',
+                'margin-bottom': '5px'
+                }
         )
     ],
         className="banner",
+        style={
+                'background-color': '#1A8695',
+                'height': '75px',
+                'padding-top': '0px',
+                'padding-left': '0px',
+                'padding-right': '0px',
+                'width': '100%',
+                'margin-bottom': '10px',
+            }
     ),
 
     # Body
@@ -158,11 +165,25 @@ app.layout = html.Div([
                         value='match_7',
                         id='dropdown-video-selection',
                         clearable=False
-                        )
+                    )
                     ],
                     style={'margin': '30px 20px 15px 20px'}
+                ),
+                html.Div([
+                    "Play Mode",
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Auto Play mode', 'value': 'auto'},
+                            {'label': 'Analysis mode', 'value': 'analysis'}
+                        ],
+                        value='auto',
+                        id='dropdown-play-selection',
+                        clearable=False
                     )
                 ],
+                    style={'margin': '30px 20px 15px 20px'}
+                )
+            ],
                 className="six columns",
                 style={'margin-bottom': '20px'}
             ),
@@ -219,7 +240,7 @@ def serve_image(image_path):
 def update_visual(value):
     return [
             dcc.Graph(
-                style={'height': '55vh'},
+                style={'height': '40vh'},
                 id="heatmap-confidence"
             ),
             dcc.Graph(
