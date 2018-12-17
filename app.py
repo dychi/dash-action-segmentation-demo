@@ -96,11 +96,7 @@ def get_frame_name(data_dict, frame_num):
     video_df = data_dict["video_info_df"]
     frame_name = video_df["Frames"][frame_num]
     return frame_name
-# local load
-#local_data_dict = load_data("data/match_7.csv") 
-#x_score, y_score, y_text, colors = get_score_bar(local_data_dict, frame_num=0)
-#scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(local_data_dict, frame_num=0)
-#print(scoreMatrix, classMatrix, colorScale, fontColors, hoverText)
+
 image_directory = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
 list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(image_directory))]
 
@@ -124,7 +120,6 @@ app.layout = html.Div([
         html.Div([
             html.Div([
                 html.Div([
-                    # Write player() insted of rdp.my_Player()
                     html.Img(
                         style={
                             'width': 600,
@@ -263,7 +258,7 @@ def update_score_bar(frame, video):
 def update_heatmap(frame, video):
     layout = go.Layout(
         title="Confidence Level of Action Classification",
-        margin=go.Margin(l=20, r=20, t=57, b=30)
+        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
     )
     scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame)
 
