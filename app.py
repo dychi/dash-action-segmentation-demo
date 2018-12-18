@@ -263,7 +263,7 @@ def serve_image(image_path):
 
 # Graph View 
 @app.callback(Output("div-visual-mode", "children"),
-             [Input("slider-frame-position", "value")])
+             [Input("dropdown-video-selection", "value")])
 def update_visual(value):
     return [
             dcc.Graph(
