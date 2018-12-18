@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+from glob import glob
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -97,7 +99,9 @@ def get_heatmap(data_dict, frame_num):
 
 # Static Path to images
 STATIC_PATH = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
-list_of_imgs = [x.parts[-1] for x in Path(STATIC_PATH).iterdir()]
+list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(STATIC_PATH))]
+#sorted([x.parts[-1] for x in Path(STATIC_PATH).iterdir()])
+
 # Rename Dictionary
 rename_dict = {'spt':  'Serve <br> Top',
                'fhpt': 'Forehand <br> Top', 
@@ -122,7 +126,7 @@ app.layout = html.Div([
             id='title',
         ),
         html.Img(
-            src="https://wwwdc05.adst.keio.ac.jp/kj/vi/common/img/thumbF2.png",#"https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
+            src="https://wwwdc05.adst.keio.ac.jp/kj/vi/common/img/thumbF2.png",
             style={
                 'height': '65px',
                 'margin-top': '8px',
@@ -248,7 +252,7 @@ def load_all_match():
 def update_image_src(frame, video):
     video_df = data_dict[video]["video_info_df"]
     frame_name = video_df["Frames"][frame]
-    return url_dict[video] + frame_name
+    return STATIC_PATH + frame_name
 
 @app.server.route('{}<image_path>.jpg'.format(STATIC_PATH))
 def serve_image(image_path):
@@ -256,7 +260,6 @@ def serve_image(image_path):
     if img_name not in list_of_imgs:
         raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
     return flask.send_from_directory(STATIC_PATH, img_name)
-
 
 # Graph View 
 @app.callback(Output("div-visual-mode", "children"),
