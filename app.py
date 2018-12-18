@@ -98,9 +98,10 @@ def get_heatmap(data_dict, frame_num):
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
 # Static Path to images
-STATIC_PATH = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
-list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(STATIC_PATH))]
-#sorted([x.parts[-1] for x in Path(STATIC_PATH).iterdir()])
+STATIC_PATH = os.path.join(os.getcwd(), 'images/')
+#list_imgs = []
+#for path in url_dict.items():
+#    list_imgs += [os.path.join(path[0], os.path.basename(x)) for x in glob('{}/*.jpg'.format(path[1]))]
 
 # Rename Dictionary
 rename_dict = {'spt':  'Serve <br> Top',
@@ -240,8 +241,8 @@ def load_all_match():
         'match_8': load_data("annotations/match_8.csv")
     }
     url_dict = {
-            'match_7':  '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/',
-            'match_8': '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_8/',
+            'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
+            'match_8': os.path.join(STATIC_PATH +'match_8/'),
     }
 
 
@@ -252,14 +253,13 @@ def load_all_match():
 def update_image_src(frame, video):
     video_df = data_dict[video]["video_info_df"]
     frame_name = video_df["Frames"][frame]
-    return STATIC_PATH + frame_name
+    return url_dict[video] + frame_name
 
-@app.server.route('{}<image_path>.jpg'.format(STATIC_PATH))
+@app.server.route('{}<path:image_path>.jpg'.format(STATIC_PATH))
 def serve_image(image_path):
     img_name = '{}.jpg'.format(image_path)
-    if img_name not in list_of_imgs:
-        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
-    return flask.send_from_directory(STATIC_PATH, img_name)
+    #return flask.send_from_directory(STATIC_PATH, img_name)
+    return flask.send_file(STATIC_PATH + img_name)
 
 # Graph View 
 @app.callback(Output("div-visual-mode", "children"),
