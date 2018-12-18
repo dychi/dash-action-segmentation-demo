@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
-import cv2
 import numpy as np
 import pandas as pd
-from glob import glob
 from pathlib import Path
 
 import flask
@@ -39,7 +36,9 @@ def load_data(path):
     classes_padded = np.pad(classes_list, (0, padding_value), mode='constant')
     
     # Class Matrix
-    classes_matrix = np.reshape(classes_padded, (2, int(total_size/2)))
+    class_list = [rename_dict[name] for name in classes_list]
+    class_pad = np.pad(class_list, (0, padding_value), mode='constant')
+    classes_matrix = np.reshape(class_pad, (2, int(total_size/2)))
     classes_matrix = np.flip(classes_matrix, axis=0)
 
     data_dict = {
@@ -63,7 +62,7 @@ def get_score_bar(data_dict, frame_num):
             break
         score_list.append(video_info_df[name][frame_num]) 
     # Score and labels
-    x_score = [f"{shot}".format(shot) for shot in classes_padded[:-1]]
+    x_score = [f"{rename_dict[shot]}" for shot in classes_padded[:-1]]
     y_score = score_list
     # Add Text information
     y_text = [f"{round(value*100)}% confidence" for value in score_list]
@@ -76,7 +75,6 @@ def get_heatmap(data_dict, frame_num):
     classes_padded = data_dict["classes_padded"]
     total_size = data_dict["total_size"]
     classes_matrix = data_dict["classes_matrix"]
-    
     # The list of scores
     score_list = []
     for el in classes_padded:
@@ -97,9 +95,23 @@ def get_heatmap(data_dict, frame_num):
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
-
-image_directory = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
-list_of_imgs = [os.path.basename(x) for x in glob('{}*.jpg'.format(image_directory))]
+# Static Path to images
+STATIC_PATH = '/Users/daichi/Badminton/dash-action-segmentation-demo/images/match_7/'
+list_of_imgs = [x.parts[-1] for x in Path(STATIC_PATH).iterdir()]
+# Rename Dictionary
+rename_dict = {'spt':  'Serve <br> Top',
+               'fhpt': 'Forehand <br> Top', 
+               'bhpt': 'Backhand <br> Top',
+               'lbpt': 'Lob <br> Top',
+               'smpt': 'Smash <br> Top',
+               'rtpt': 'React <br> Top',
+               'n':    'None', 
+               'spb':  'Serve <br> Bottom',
+               'fhpb': 'Forehabd <br> Bottom',
+               'bhpb': 'Backhand <br> Bottom',
+               'lbpb': 'Lob <br> Bottom',
+               'smpb': 'Smash <br> Bottom',
+               'rtpb': 'React <br> Bottom'}
 
 # Main App
 app.layout = html.Div([
@@ -154,8 +166,8 @@ app.layout = html.Div([
                     "Frame Position:",
                     dcc.Slider(
                         min=0,
-                        max=120,
-                        marks={i: f'{i}th' for i in range(0,120,10)},
+                        max=500,
+                        marks={i: f'{i}th' for i in range(0,500,50)},
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
@@ -238,12 +250,12 @@ def update_image_src(frame, video):
     frame_name = video_df["Frames"][frame]
     return url_dict[video] + frame_name
 
-@app.server.route('{}<image_path>.jpg'.format(image_directory))
+@app.server.route('{}<image_path>.jpg'.format(STATIC_PATH))
 def serve_image(image_path):
     img_name = '{}.jpg'.format(image_path)
     if img_name not in list_of_imgs:
         raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
-    return flask.send_from_directory(image_directory, img_name)
+    return flask.send_from_directory(STATIC_PATH, img_name)
 
 
 # Graph View 
@@ -252,15 +264,15 @@ def serve_image(image_path):
 def update_visual(value):
     return [
             dcc.Graph(
-                style={'height': '40vh'},
+                style={'height': '30vh'},
                 id="heatmap-confidence"
             ),
-            html.H3(
+            html.H4(
                 style={'position': 'center'},
                 id="correct-label"
             ),
             dcc.Graph(
-                style={'height': '40vh'},
+                style={'height': '45vh'},
                 id="bar-score-graph"
             )
     ]
@@ -271,7 +283,7 @@ def update_visual(value):
              [State("dropdown-video-selection", "value")])
 def update_label(frame, video):
     label = data_dict[video]["video_info_df"]["class_str_label"][frame]
-    return 'Correct Label is "{}"'.format(label)
+    return 'Correct Label is "{}"'.format(rename_dict[label].replace('<br>', ''))
 
 # Updating Bar Score
 @app.callback(Output("bar-score-graph", "figure"),
@@ -282,6 +294,7 @@ def update_score_bar(frame, video):
         title="Classification Score of Player's Shot",
         showlegend=False,
         margin=go.layout.Margin(l=70, r=40, t=50, b=30),
+        xaxis={'tickfont': {'size': 8}},
         yaxis={'title': 'Score', 'range': [0,1]}
         )
     x_score, y_score, y_text, colors = get_score_bar(data_dict[video], frame)
