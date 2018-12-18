@@ -3,7 +3,6 @@ import os
 from glob import glob
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 import flask
 import dash
