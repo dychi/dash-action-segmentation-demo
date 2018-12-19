@@ -184,8 +184,10 @@ app.layout = html.Div([
                     dcc.Dropdown(
                         options=[
                             {'label': 'Match 7: Weilee vs Long @ Semi Finals', 'value': 'match_7'},
-                            {'label': 'Match 8: Chen vs Zwiebler @ R32', 'value': 'match_8'}
-                        ],
+                            {'label': 'Match 8: Chen vs Zwiebler @ R32', 'value': 'match_8'},
+                            {'label': 'Match 9: Li vs Wang @ Semi Finals', 'value': 'match_9'},
+                            {'label': 'Match 10: Na vs Fasungova @ Group D', 'value': 'match_10'}
+                     ],
                         value='match_7',
                         id='dropdown-video-selection',
                         clearable=False
@@ -237,11 +239,15 @@ def load_all_match():
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
         'match_7': load_data("annotations/match_7.csv"),
-        'match_8': load_data("annotations/match_8.csv")
+        'match_8': load_data("annotations/match_8.csv"),
+        'match_9': load_data("annotations/match_9.csv"),
+        'match_10': load_data("annotations/match_10.csv")
     }
     url_dict = {
             'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
             'match_8': os.path.join(STATIC_PATH +'match_8/'),
+            'match_9': os.path.join(STATIC_PATH +'match_9/'),
+            'match_10': os.path.join(STATIC_PATH +'match_10/'),
     }
 
 

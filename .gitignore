@@ -103,6 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# DS_store
+.DS_Store
+
 # data
 images/
 annotations/
