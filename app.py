@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from glob import glob
 import numpy as np
 import pandas as pd
 
@@ -96,12 +95,9 @@ def get_heatmap(data_dict, frame_num):
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
 
+
 # Static Path to images
 STATIC_PATH = os.path.join(os.getcwd(), 'images/')
-#list_imgs = []
-#for path in url_dict.items():
-#    list_imgs += [os.path.join(path[0], os.path.basename(x)) for x in glob('{}/*.jpg'.format(path[1]))]
-
 # Rename Dictionary
 rename_dict = {'spt':  'Serve <br> Top',
                'fhpt': 'Forehand <br> Top', 
