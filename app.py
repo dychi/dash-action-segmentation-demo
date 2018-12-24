@@ -250,7 +250,7 @@ def load_all_match():
         #'match_10': load_data("annotations/match_10.csv")
     }
     url_dict = {
-            'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
+            #'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
             'match_8': os.path.join(STATIC_PATH +'match_8/'),
             #'match_9': os.path.join(STATIC_PATH +'match_9/'),
             #'match_10': os.path.join(STATIC_PATH +'match_10/'),
