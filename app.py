@@ -15,7 +15,7 @@ import plotly.figure_factory as ff
 DEBUG = True
 
 app = dash.Dash(__name__)
-server = app.server
+server = app.server # the Flask app
 
 app.scripts.config.serve_locally = True
 app.config['suppress_callback_exceptions'] = True
