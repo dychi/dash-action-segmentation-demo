@@ -2,6 +2,7 @@
 import os
 import numpy as np
 import pandas as pd
+from textwrap import dedent
 
 import flask
 import dash
@@ -10,8 +11,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
-
-import utils.desc_card as drc
 
 DEBUG = True
 
@@ -62,10 +61,10 @@ def get_score_bar(data_dict, frame_num):
             break
         score_list.append(video_info_df[name][frame_num]) 
     # Score and labels
-    x_score = ["{rename_dict[shot]}" for shot in classes_padded[:-1]]
+    x_score = ["{}".format(rename_dict[shot]) for shot in classes_padded[:-1]]
     y_score = score_list
     # Add Text information
-    y_text = ["{round(value*100)}% confidence" for value in score_list]
+    y_text = ["{}% confidence".format(round(value*100)) for value in score_list]
     colors = "rgb(100,100,100)"
     return np.array(x_score), np.array(y_score), y_text, colors
 
@@ -90,7 +89,7 @@ def get_heatmap(data_dict, frame_num):
     colorscale = [[0, '#ffffff'], [1,'#f71111']]
     font_colors = ['#3c3636', '#efecee']
     # Hover Text
-    hover_text = ['{score * 100:.2f}% confidence' for score in score_list]
+    hover_text = ['{:.2f}% confidence'.format(score * 100) for score in score_list]
     hover_text = np.reshape(hover_text, (-1, int(total_size/2)))
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
@@ -167,7 +166,7 @@ app.layout = html.Div([
                     dcc.Slider(
                         min=0,
                         max=500,
-                        marks={i: '{i}th' for i in range(0,500,50)},
+                        marks={i: '{}th'.format(i) for i in range(0,500,50)},
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
@@ -216,12 +215,23 @@ app.layout = html.Div([
             
             className="row"
         ),
-
-        drc.DemoDescriptionCard(
-            '''
-            ## Badminton Action Segmentation Demo View
-            To get started, select a footage you want to view, and choose the match video.
-            '''
+        html.Div(
+            className='row',
+            style={
+                'padding': '15px 30px 27px',
+                'margin': '10px auto 45px',
+                'width': '80%',
+                'max-width': '1024px',
+                'borderRadius': 5,
+                'border': 'thin lightgrey solid',
+                'font-family': 'Roboto, sans-serif',
+            },
+            children=dcc.Markdown(dedent(
+                '''
+                ## Badminton Action Segmentation Demo View
+                To get started, select a footage you want to view, and choose the match video.
+                '''
+                ))
             )
         ],
         className="container scalable"
