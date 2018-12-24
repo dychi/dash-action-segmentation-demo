@@ -183,7 +183,7 @@ app.layout = html.Div([
                             {'label': 'Match 9: Li vs Wang @ Semi Finals', 'value': 'match_9'},
                             {'label': 'Match 10: Na vs Fasungova @ Group D', 'value': 'match_10'}
                      ],
-                        value='match_7',
+                        value='match_8',
                         id='dropdown-video-selection',
                         clearable=False
                     )
@@ -252,8 +252,8 @@ def load_all_match():
     url_dict = {
             'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
             'match_8': os.path.join(STATIC_PATH +'match_8/'),
-            'match_9': os.path.join(STATIC_PATH +'match_9/'),
-            'match_10': os.path.join(STATIC_PATH +'match_10/'),
+            #'match_9': os.path.join(STATIC_PATH +'match_9/'),
+            #'match_10': os.path.join(STATIC_PATH +'match_10/'),
     }
 
 
