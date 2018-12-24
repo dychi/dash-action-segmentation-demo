@@ -6,10 +6,10 @@ runtime_config:
     python_version: 36
 
 handlers:
-- url: /images/*
+- url: /images
   static_dir: images
 
-- url: /annotations/*
+- url: /annotations
   static_dir: annotations
 
 - url: .*
