@@ -48,7 +48,7 @@ def load_data(path):
             "total_size": total_size
     }
     if DEBUG:
-        print('{path} loaded.')
+        print('{} loaded.'.format(path))
     return data_dict
 
 def get_score_bar(data_dict, frame_num):
@@ -246,8 +246,8 @@ def load_all_match():
     data_dict = {
         'match_7': load_data("annotations/match_7.csv"),
         'match_8': load_data("annotations/match_8.csv"),
-        'match_9': load_data("annotations/match_9.csv"),
-        'match_10': load_data("annotations/match_10.csv")
+        #'match_9': load_data("annotations/match_9.csv"),
+        #'match_10': load_data("annotations/match_10.csv")
     }
     url_dict = {
             'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
