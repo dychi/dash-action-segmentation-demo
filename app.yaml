@@ -7,10 +7,10 @@ runtime_config:
 
 handlers:
 - url: /images/*
-static_dir: images
+  static_dir: images
 
 - url: /annotations/*
-static_dir: annotations
+  static_dir: annotations
 
 - url: .*
-script: app.py
+  script: app.py
