@@ -49,7 +49,7 @@ def load_data(path):
             "total_size": total_size
     }
     if DEBUG:
-        print(f'{path} loaded.')
+        print('{path} loaded.')
     return data_dict
 
 def get_score_bar(data_dict, frame_num):
@@ -62,10 +62,10 @@ def get_score_bar(data_dict, frame_num):
             break
         score_list.append(video_info_df[name][frame_num]) 
     # Score and labels
-    x_score = [f"{rename_dict[shot]}" for shot in classes_padded[:-1]]
+    x_score = ["{rename_dict[shot]}" for shot in classes_padded[:-1]]
     y_score = score_list
     # Add Text information
-    y_text = [f"{round(value*100)}% confidence" for value in score_list]
+    y_text = ["{round(value*100)}% confidence" for value in score_list]
     colors = "rgb(100,100,100)"
     return np.array(x_score), np.array(y_score), y_text, colors
 
@@ -90,7 +90,7 @@ def get_heatmap(data_dict, frame_num):
     colorscale = [[0, '#ffffff'], [1,'#f71111']]
     font_colors = ['#3c3636', '#efecee']
     # Hover Text
-    hover_text = [f'{score * 100:.2f}% confidence' for score in score_list]
+    hover_text = ['{score * 100:.2f}% confidence' for score in score_list]
     hover_text = np.reshape(hover_text, (-1, int(total_size/2)))
     hover_text = np.flip(hover_text, axis=0)
     return score_matrix, classes_matrix, colorscale, font_colors, hover_text
@@ -167,7 +167,7 @@ app.layout = html.Div([
                     dcc.Slider(
                         min=0,
                         max=500,
-                        marks={i: f'{i}th' for i in range(0,500,50)},
+                        marks={i: '{i}th' for i in range(0,500,50)},
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
