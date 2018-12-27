@@ -1,6 +1,6 @@
 runtime: python36
 entrypoint: gunicorn -b :$PORT app:server
-threadsafe: true
+# threadsafe: true # not supported in python3.6
 #automatic_scaling:
 #    min_idle_instances: automatic   # idle状態にあるインスタンスの最小値
 #    max_idle_instances: 1                 # idle状態にあるインスタンスの最大値
