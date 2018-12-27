@@ -1,4 +1,4 @@
-runtime: python
+runtime: python36
 entrypoint: gunicorn -b :$PORT app:server
 threadsafe: true
 #automatic_scaling:
