@@ -17,7 +17,7 @@ handlers:
 - url: /annotations
   static_dir: annotations
 
-- url: .*
+- url: /.*
   script: app.py
 
 resources:
