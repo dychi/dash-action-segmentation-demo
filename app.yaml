@@ -1,4 +1,4 @@
-runtime: python36
+runtime: python37
 entrypoint: gunicorn -b :$PORT app:server
 # threadsafe: true # not supported in python3.6
 #automatic_scaling:
@@ -7,8 +7,8 @@ entrypoint: gunicorn -b :$PORT app:server
 #    min_pending_latency: 3000ms  # リクエストを処理するまでに許される待ち時間の最小
 #    max_pending_latency: automatic
 
-runtime_config:
-    python_version: 3.6
+#runtime_config:
+#    python_version: 3.6
 
 handlers:
 - url: /images
