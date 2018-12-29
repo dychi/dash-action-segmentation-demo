@@ -165,8 +165,8 @@ app.layout = html.Div([
                     "Frame Position:",
                     dcc.Slider(
                         min=0,
-                        max=500,
-                        marks={i: '{}th'.format(i) for i in range(0,500,50)},
+                        max=120,
+                        marks={i: '{}th'.format(i) for i in range(0,120,30)},
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
@@ -246,14 +246,14 @@ def load_all_match():
     data_dict = {
         'match_7': load_data("annotations/match_7.csv"),
         'match_8': load_data("annotations/match_8.csv"),
-        #'match_9': load_data("annotations/match_9.csv"),
-        #'match_10': load_data("annotations/match_10.csv")
+        'match_9': load_data("annotations/match_9.csv"),
+        'match_10': load_data("annotations/match_10.csv")
     }
     url_dict = {
-            #'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
+            'match_7':  os.path.join(STATIC_PATH + 'match_7/'),
             'match_8': os.path.join(STATIC_PATH +'match_8/'),
-            #'match_9': os.path.join(STATIC_PATH +'match_9/'),
-            #'match_10': os.path.join(STATIC_PATH +'match_10/'),
+            'match_9': os.path.join(STATIC_PATH +'match_9/'),
+            'match_10': os.path.join(STATIC_PATH +'match_10/'),
     }
 
 
