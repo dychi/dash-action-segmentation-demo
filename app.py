@@ -148,8 +148,8 @@ app.layout = html.Div([
                 html.Div([
                     html.Img(
                         style={
-                            'width': 600,
-                            'height': 400,
+                            'width': '90%',#600,
+                            'height': 'auto',#400,
                             'margin': '30px 20px 15px 20px'
                         },
                         id="images",
@@ -282,7 +282,7 @@ def update_visual(value):
                 id="heatmap-confidence"
             ),
             html.H4(
-                style={'position': 'center'},
+                style={'margin': '15px 20px 15px 20px'}, # top right bottom left
                 id="correct-label"
             ),
             dcc.Graph(
@@ -319,7 +319,6 @@ def update_score_bar(frame, video):
             text=y_text,
             name="Classification Score",
             hoverinfo="x+text",
-            #marker=go.Marker(color=colors, line=dict(color='rgb(79,85,91)', width=1))
         )
     return go.Figure(data=[bar], layout=layout)
 
