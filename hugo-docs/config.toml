@@ -1,6 +1,6 @@
 baseURL = "https://dychi.github.io/dash-action-segmentation-demo/"
 languageCode = "ja"
-title = "My New Hugo Site"
+title = "Document for dash-segmentation demo app"
 theme = "hugo-theme-learn"
 publishDir = "../docs"
 contentDir = "content"

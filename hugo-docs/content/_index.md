@@ -40,4 +40,42 @@ urllib3==1.24.1
 Werkzeug==0.14.1
 ```
 
-## Plotly
+## ディレクトリ構造
+```
+.
+├── README.md
+├── app.py
+├── flex.app.yaml
+├── annotations
+│   ├── match_7.csv
+│   ├── match_8.csv
+│   ├── match_9.csv
+│   ├── match_10.csv
+├── imgaes
+│   ├── match_7/
+│   ├── match_8/
+│   ├── match_9/
+│   ├── match_10/
+├── requirements.txt
+└── standard.app.yaml
+```
+
+## コードの解説
+ここからはapp.pyの詳細について解説していきます。
+### 処理の概要
+まずは全体の処理の流れを見ていきます。
+
+1. Dash から Flask のインスタンスにアクセス
+2. html likeなスタイルでページ内の配置を指定
+3. データの読み込み
+4. static なデータを読み込むために path の指定
+5. @app.callback でインタラクティブなグラフの配置を指定
+6. State, Input によるグラフの変化を関数内で定義し返す
+7. グラフの描画スタイルは plotly のスタイル
+8. css の path を指定
+9. server をローカルで起動
+
+### 
+
+
+
