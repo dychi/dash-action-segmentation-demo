@@ -7,4 +7,4 @@ draft: false
 このページはバドミントンの試合映像を解析する研究結果をデモで公開した際に使用した Dash, Plotly の使い方を説明するサイトです。
 
 以下の映像がそのデモの様子です。
-![demo](/hugo-docs/static/img/demo.gif)
+![demo](/img/demo.gif)
