@@ -1,4 +1,4 @@
-baseURL = "https://dychi.github.io/dash-action-segmentation-demo/"
+baseURL = "https://dychi.github.io/dash-action-segmentation-demo/docs/"
 languageCode = "en-us"
 title = "My New Hugo Site"
 theme = "hugo-theme-learn"
