@@ -6,6 +6,6 @@ Here, I show that results of my research "Action Segmentation for Badminton vide
 
 ![demo](data/demo.gif)
 
+**For more details, see [document page](https://dychi.github.io/dash-action-segmentation-demo/)**
 
 
-I'll write more detail in future...
