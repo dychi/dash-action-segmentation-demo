@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
 <link rel="icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
-    <title>Directories :: Document for dash-segmentation demo app</title>
+    <title>Annotations :: Document for dash-segmentation demo app</title>
 
     
     <link href="/dash-action-segmentation-demo/css/nucleus.css?1548927259" rel="stylesheet">
@@ -32,7 +32,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/dash-action-segmentation-demo/basics/directories/">
+  <body class="" data-url="/dash-action-segmentation-demo/basics/anno/">
     <nav id="sidebar" class="">
 
 
@@ -134,7 +134,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/basics/directories/" title="Directories" class="dd-item active">
+      <li data-nav-id="/dash-action-segmentation-demo/basics/directories/" title="Directories" class="dd-item ">
         <a href="/dash-action-segmentation-demo/basics/directories/">
         Directories
         
@@ -153,7 +153,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/basics/anno/" title="Annotations" class="dd-item ">
+      <li data-nav-id="/dash-action-segmentation-demo/basics/anno/" title="Annotations" class="dd-item active">
         <a href="/dash-action-segmentation-demo/basics/anno/">
         Annotations
         
@@ -274,7 +274,7 @@
             
           
           
-            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/basics/'>Basics</a> > Directories
+            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/basics/'>Basics</a> > Annotations
           
          
           
@@ -293,7 +293,7 @@
 <ul>
 <li>
 <ul>
-<li><a href="#ディレクトリ構造">ディレクトリ構造</a></li>
+<li><a href="#読み込むcsvファイルの形式">読み込むcsvファイルの形式</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -309,7 +309,7 @@
         
         <div id="body-inner">
           
-            <h1>Directories</h1>
+            <h1>Annotations</h1>
           
 
         
@@ -317,25 +317,135 @@
 
 
 
-<h3 id="ディレクトリ構造">ディレクトリ構造</h3>
+<h3 id="読み込むcsvファイルの形式">読み込むcsvファイルの形式</h3>
 
-<pre><code>.
-├── README.md
-├── app.py
-├── annotations
-│   ├── match_7.csv
-│   ├── match_8.csv
-│   ├── match_9.csv
-│   ├── match_10.csv
-├── imgaes
-│   ├── match_7/
-│   ├── match_8/
-│   ├── match_9/
-│   ├── match_10/
-├── requirements.txt
-├── flex.app.yaml
-└── standard.app.yaml
-</code></pre>
+<p>予測結果と正解データを表示するためのcsvファイルのデータの例を示します。</p>
+
+<table>
+<thead>
+<tr>
+<th>Top1_score</th>
+<th>Frames</th>
+<th>class_str_label</th>
+<th>class_str_top1</th>
+<th>n</th>
+<th>smpt</th>
+<th>smpb</th>
+<th>rtpt</th>
+<th>rtpb</th>
+<th>bhpt</th>
+<th>bhpb</th>
+<th>fhpt</th>
+<th>fhpb</th>
+<th>lbpt</th>
+<th>lbpb</th>
+<th>spt</th>
+<th>spb</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0.5331301093101501</td>
+<td>img_009549.jpg</td>
+<td>spb</td>
+<td>spb</td>
+<td>0.090465754</td>
+<td>9.656445e-05</td>
+<td>0.001097708</td>
+<td>0.03143407</td>
+<td>0.004162653</td>
+<td>0.00018237281</td>
+<td>0.00044826482</td>
+<td>4.8154732e-05</td>
+<td>2.5673266e-05</td>
+<td>0.0032581198</td>
+<td>0.0016761322</td>
+<td>0.3339744</td>
+<td>0.5331301</td>
+</tr>
+
+<tr>
+<td>0.5481389164924622</td>
+<td>img_009550.jpg</td>
+<td>spb</td>
+<td>spb</td>
+<td>0.089183785</td>
+<td>2.7546675e-05</td>
+<td>0.0006168233</td>
+<td>0.017062714</td>
+<td>0.0027068239</td>
+<td>7.7470446e-05</td>
+<td>0.0004935579</td>
+<td>1.8993607e-05</td>
+<td>2.2912322e-05</td>
+<td>0.0016966339</td>
+<td>0.001952591</td>
+<td>0.3380012</td>
+<td>0.5481389</td>
+</tr>
+
+<tr>
+<td>0.5484710931777954</td>
+<td>img_009551.jpg</td>
+<td>spb</td>
+<td>spb</td>
+<td>0.07672995</td>
+<td>2.1207929e-05</td>
+<td>0.00046188603</td>
+<td>0.014227357</td>
+<td>0.002111698</td>
+<td>5.750537e-05</td>
+<td>0.0003772568</td>
+<td>1.4450693e-05</td>
+<td>1.7394166e-05</td>
+<td>0.0014095443</td>
+<td>0.001609176</td>
+<td>0.3544914</td>
+<td>0.5484711</td>
+</tr>
+
+<tr>
+<td>0.5993022322654724</td>
+<td>img_009552.jpg</td>
+<td>spb</td>
+<td>spb</td>
+<td>0.057722352</td>
+<td>2.0250582e-05</td>
+<td>0.00030638766</td>
+<td>0.012893226</td>
+<td>0.0017050059</td>
+<td>4.5520985e-05</td>
+<td>0.00021573818</td>
+<td>1.3501122e-05</td>
+<td>1.195791e-05</td>
+<td>0.0011319482</td>
+<td>0.00093692733</td>
+<td>0.325695</td>
+<td>0.59930223</td>
+</tr>
+
+<tr>
+<td>0.6349471807479858</td>
+<td>img_009553.jpg</td>
+<td>spb</td>
+<td>spb</td>
+<td>0.06099716</td>
+<td>2.7607226e-05</td>
+<td>0.0003224706</td>
+<td>0.014160681</td>
+<td>0.0018254592</td>
+<td>5.8062556e-05</td>
+<td>0.00022118156</td>
+<td>1.8048353e-05</td>
+<td>1.4626823e-05</td>
+<td>0.0012549176</td>
+<td>0.00094897544</td>
+<td>0.2852036</td>
+<td>0.6349472</td>
+</tr>
+</tbody>
+</table>
 
 
 <footer class=" footline" >
@@ -407,6 +517,22 @@
             
                 
                     
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
                     
                 
                 
@@ -426,22 +552,6 @@
                     
                         
                         
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
                     
                 
                 
@@ -482,10 +592,10 @@
 	 
 	 
 		
-			<a class="nav nav-prev" href="/dash-action-segmentation-demo/basics/requirements/" title="Requirements"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/dash-action-segmentation-demo/basics/directories/" title="Directories"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/dash-action-segmentation-demo/basics/anno/" title="Annotations" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/dash-action-segmentation-demo/basics/reference/" title="Reference" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
