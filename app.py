@@ -358,9 +358,6 @@ external_css = [
 for css in external_css:
     app.css.append_css({"external_url": css})
 
-app.scripts.append_script({
-        'external_url': "https://dash-action-segmentation.appspot.com/gtag.js"
-    })
 
 if __name__ == '__main__':
     app.run_server(debug=DEBUG)
