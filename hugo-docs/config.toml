@@ -5,3 +5,9 @@ theme = "hugo-theme-learn"
 publishDir = "../docs"
 contentDir = "content"
 layoutDir = "layouts"
+
+[[menu.shortcuts]] 
+name = "<i class='fab fa-github'></i> Github repo"
+identifier = "ds"
+url = "https://github.com/dychi/dash-action-segmentation-demo"
+weight = 10
