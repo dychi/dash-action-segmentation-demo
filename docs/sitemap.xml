@@ -3,12 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://dychi.github.io/dash-action-segmentation-demo/about/</loc>
-    <lastmod>2019-01-28T23:08:57+09:00</lastmod>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/basics/requirements/</loc>
+    <lastmod>2019-01-31T17:35:22+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/basics/directories/</loc>
+    <lastmod>2019-01-31T17:38:11+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/basics/annotations/</loc>
+    <lastmod>2019-01-31T17:41:18+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/basics/reference/</loc>
+    <lastmod>2019-01-31T17:42:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/basics/</loc>
+    <lastmod>2019-01-31T17:22:40+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://dychi.github.io/dash-action-segmentation-demo/</loc>
+    <lastmod>2019-01-28T23:08:57+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dychi.github.io/dash-action-segmentation-demo/content/</loc>
+    <lastmod>2019-01-28T23:08:00+09:00</lastmod>
   </url>
   
   <url>
