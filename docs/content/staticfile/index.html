@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
 <link rel="icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
-    <title>Reference :: Document for dash-segmentation demo app</title>
+    <title>Static File :: Document for dash-segmentation demo app</title>
 
     
     <link href="/dash-action-segmentation-demo/css/nucleus.css?1548933868" rel="stylesheet">
@@ -32,7 +32,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/dash-action-segmentation-demo/basics/reference/">
+  <body class="" data-url="/dash-action-segmentation-demo/content/staticfile/">
     <nav id="sidebar" class="">
 
 
@@ -91,7 +91,7 @@
   
     
     <li data-nav-id="/dash-action-segmentation-demo/basics/" title="Basics" class="dd-item 
-        parent
+        
         
         
         ">
@@ -172,7 +172,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/basics/reference/" title="Reference" class="dd-item active">
+      <li data-nav-id="/dash-action-segmentation-demo/basics/reference/" title="Reference" class="dd-item ">
         <a href="/dash-action-segmentation-demo/basics/reference/">
         Reference
         
@@ -199,7 +199,7 @@
   
     
     <li data-nav-id="/dash-action-segmentation-demo/content/" title="Content" class="dd-item 
-        
+        parent
         
         
         ">
@@ -223,7 +223,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/content/staticfile/" title="Static File" class="dd-item ">
+      <li data-nav-id="/dash-action-segmentation-demo/content/staticfile/" title="Static File" class="dd-item active">
         <a href="/dash-action-segmentation-demo/content/staticfile/">
         Static File
         
@@ -322,7 +322,7 @@
             
           
           
-            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/basics/'>Basics</a> > Reference
+            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/content/'>Content</a> > Static File
           
          
           
@@ -341,7 +341,7 @@
 <ul>
 <li>
 <ul>
-<li><a href="#参考にしたサイト">参考にしたサイト</a></li>
+<li><a href="#static-file">Static File</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -357,7 +357,7 @@
         
         <div id="body-inner">
           
-            <h1>Reference</h1>
+            <h1>Static File</h1>
           
 
         
@@ -365,12 +365,36 @@
 
 
 
-<h3 id="参考にしたサイト">参考にしたサイト</h3>
+<h3 id="static-file">Static File</h3>
 
-<ul>
-<li><a href="https://github.com/plotly/dash-object-detection">Dash Object Detection Explorer</a>: 作成したデモの原型となるページ</li>
-<li><a href="https://github.com/plotly/dash-recipes">Dash recipes</a>: Plotlyでの色んなグラフの書き方やDashの使い方について学べます。</li>
-</ul>
+<p>HTMLファイルや画像ファイルなど，クライアントからの要求に対する応答に使用するファイルのうち、リクエスト内容に影響されないで常に同じ内容になるコンテンツを、静的コンテンツといいます。</p>
+
+<p>Dashは動的にサイトを生成しますが、画像などの静的ファイルを表示するには画像ファイルへのパスを明示してやる必要があります。</p>
+
+<pre><code># Static Path to images
+STATIC_PATH = os.path.join(os.getcwd(), 'images/')
+</code></pre>
+
+<p>指定した静的ファイルのディレクトリから相対パスで画像を読み込むためには、Flaskのsend_file()を使用してrootディレクトリからのパスを返します。</p>
+
+<pre><code># Images Display
+@app.callback(Output(&quot;images&quot;, &quot;src&quot;),
+             [Input(&quot;slider-frame-position&quot;, &quot;value&quot;)],
+             [State(&quot;dropdown-video-selection&quot;, &quot;value&quot;)])
+def update_image_src(frame, video):
+    video_df = data_dict[video][&quot;video_info_df&quot;]
+    frame_name = video_df[&quot;Frames&quot;][frame]
+    return url_dict[video] + frame_name
+
+@app.server.route('{}&lt;path:image_path&gt;.jpg'.format(STATIC_PATH))
+def serve_image(image_path):
+    img_name = '{}.jpg'.format(image_path)
+    return flask.send_file(STATIC_PATH + img_name)
+</code></pre>
+
+<p>こうすることで、id=&ldquo;images&rdquo;のsrcを更新して画像を表示することが出来ます。</p>
+
+<p>その他にも<a href="https://qiita.com/5zm/items/760000cf63b176be544c">send_from_directory()</a>などを使用することも出来ます。</p>
 
 
 <footer class=" footline" >
@@ -409,6 +433,8 @@
             
                 
                     
+                        
+                        
                     
                 
                 
@@ -423,8 +449,21 @@
             
                 
                     
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
                         
-                        
+            
+            
+                
                     
                 
                 
@@ -469,6 +508,23 @@
             
         
                     
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
                         
             
             
@@ -486,9 +542,6 @@
             
         
                     
-            
-        
-                    
                         
             
             
@@ -496,35 +549,6 @@
                     
                         
                         
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
                     
                 
                 
@@ -549,10 +573,10 @@
 	 
 	 
 		
-			<a class="nav nav-prev" href="/dash-action-segmentation-demo/basics/anno/" title="Annotations"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/dash-action-segmentation-demo/content/" title="Content"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/dash-action-segmentation-demo/content/" title="Content" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/dash-action-segmentation-demo/content/callback/" title="Callback" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

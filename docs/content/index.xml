@@ -11,5 +11,31 @@
 	<atom:link href="https://dychi.github.io/dash-action-segmentation-demo/content/index.xml" rel="self" type="application/rss+xml" />
     
     
+    <item>
+      <title>Static File</title>
+      <link>https://dychi.github.io/dash-action-segmentation-demo/content/staticfile/</link>
+      <pubDate>Thu, 31 Jan 2019 19:53:09 +0900</pubDate>
+      
+      <guid>https://dychi.github.io/dash-action-segmentation-demo/content/staticfile/</guid>
+      <description>Static File HTMLファイルや画像ファイルなど，クライアントからの要求に対する応答に使用するファイルのうち、リクエスト内容に影響されないで常に同じ内容になるコンテンツを、静的コンテンツといいます。
+Dashは動的にサイトを生成しますが、画像などの静的ファイルを表示するには画像ファイルへのパスを明示してやる必要があります。
+# Static Path to images STATIC_PATH = os.path.join(os.getcwd(), &#39;images/&#39;)  指定した静的ファイルのディレクトリから相対パスで画像を読み込むためには、Flaskのsend_file()を使用してrootディレクトリからのパスを返します。
+# Images Display @app.callback(Output(&amp;quot;images&amp;quot;, &amp;quot;src&amp;quot;), [Input(&amp;quot;slider-frame-position&amp;quot;, &amp;quot;value&amp;quot;)], [State(&amp;quot;dropdown-video-selection&amp;quot;, &amp;quot;value&amp;quot;)]) def update_image_src(frame, video): video_df = data_dict[video][&amp;quot;video_info_df&amp;quot;] frame_name = video_df[&amp;quot;Frames&amp;quot;][frame] return url_dict[video] + frame_name @app.server.route(&#39;{}&amp;lt;path:image_path&amp;gt;.jpg&#39;.format(STATIC_PATH)) def serve_image(image_path): img_name = &#39;{}.jpg&#39;.format(image_path) return flask.send_file(STATIC_PATH + img_name)  こうすることで、id=&amp;ldquo;images&amp;rdquo;のsrcを更新して画像を表示することが出来ます。
+その他にもsend_from_directory()などを使用することも出来ます。</description>
+    </item>
+    
+    <item>
+      <title>Callback</title>
+      <link>https://dychi.github.io/dash-action-segmentation-demo/content/callback/</link>
+      <pubDate>Thu, 31 Jan 2019 19:32:49 +0900</pubDate>
+      
+      <guid>https://dychi.github.io/dash-action-segmentation-demo/content/callback/</guid>
+      <description>Callback callbackは作成したグラフをインタラクティブに描画するために使います。
+# Update Correct Label @app.callback(Output(&amp;quot;correct-label&amp;quot;, &amp;quot;children&amp;quot;), [Input(&amp;quot;slider-frame-position&amp;quot;, &amp;quot;value&amp;quot;)], [State(&amp;quot;dropdown-video-selection&amp;quot;, &amp;quot;value&amp;quot;)]) def update_label(frame, video): label = data_dict[video][&amp;quot;video_info_df&amp;quot;][&amp;quot;class_str_label&amp;quot;][frame] return &#39;Correct Label is &amp;quot;{}&amp;quot;&#39;.format(rename_dict[label].replace(&#39;&amp;lt;br&amp;gt;&#39;, &#39;&#39;))  ここでは、app.pyのupdate_visual関数の中で作成したhtml.H4で指定している id=&amp;ldquo;correct-label&amp;rdquo; のchildren要素を更新することを示しています。
+インタラクティブに変更する際には入力と状態を定義する必要があり、Input, Stateをupdate_label関数の引数とします。
+その引数に対して、H4の Correct Label is {} の{}を更新することになります。
+このようにしてそれぞれのグラフでの値を変更していきます。</description>
+    </item>
+    
   </channel>
 </rss>

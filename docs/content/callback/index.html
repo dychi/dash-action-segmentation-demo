@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
 <link rel="icon" href="/dash-action-segmentation-demo/images/favicon.png" type="image/x-icon" />
-    <title>Reference :: Document for dash-segmentation demo app</title>
+    <title>Callback :: Document for dash-segmentation demo app</title>
 
     
     <link href="/dash-action-segmentation-demo/css/nucleus.css?1548933868" rel="stylesheet">
@@ -32,7 +32,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/dash-action-segmentation-demo/basics/reference/">
+  <body class="" data-url="/dash-action-segmentation-demo/content/callback/">
     <nav id="sidebar" class="">
 
 
@@ -91,7 +91,7 @@
   
     
     <li data-nav-id="/dash-action-segmentation-demo/basics/" title="Basics" class="dd-item 
-        parent
+        
         
         
         ">
@@ -172,7 +172,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/basics/reference/" title="Reference" class="dd-item active">
+      <li data-nav-id="/dash-action-segmentation-demo/basics/reference/" title="Reference" class="dd-item ">
         <a href="/dash-action-segmentation-demo/basics/reference/">
         Reference
         
@@ -199,7 +199,7 @@
   
     
     <li data-nav-id="/dash-action-segmentation-demo/content/" title="Content" class="dd-item 
-        
+        parent
         
         
         ">
@@ -242,7 +242,7 @@
  
   
     
-      <li data-nav-id="/dash-action-segmentation-demo/content/callback/" title="Callback" class="dd-item ">
+      <li data-nav-id="/dash-action-segmentation-demo/content/callback/" title="Callback" class="dd-item active">
         <a href="/dash-action-segmentation-demo/content/callback/">
         Callback
         
@@ -322,7 +322,7 @@
             
           
           
-            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/basics/'>Basics</a> > Reference
+            <a href='/dash-action-segmentation-demo/'></a> > <a href='/dash-action-segmentation-demo/content/'>Content</a> > Callback
           
          
           
@@ -341,7 +341,7 @@
 <ul>
 <li>
 <ul>
-<li><a href="#参考にしたサイト">参考にしたサイト</a></li>
+<li><a href="#callback">Callback</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -357,7 +357,7 @@
         
         <div id="body-inner">
           
-            <h1>Reference</h1>
+            <h1>Callback</h1>
           
 
         
@@ -365,12 +365,28 @@
 
 
 
-<h3 id="参考にしたサイト">参考にしたサイト</h3>
+<h3 id="callback">Callback</h3>
 
-<ul>
-<li><a href="https://github.com/plotly/dash-object-detection">Dash Object Detection Explorer</a>: 作成したデモの原型となるページ</li>
-<li><a href="https://github.com/plotly/dash-recipes">Dash recipes</a>: Plotlyでの色んなグラフの書き方やDashの使い方について学べます。</li>
-</ul>
+<p>callbackは作成したグラフをインタラクティブに描画するために使います。</p>
+
+<pre><code># Update Correct Label
+@app.callback(Output(&quot;correct-label&quot;, &quot;children&quot;),
+             [Input(&quot;slider-frame-position&quot;, &quot;value&quot;)],
+             [State(&quot;dropdown-video-selection&quot;, &quot;value&quot;)])
+def update_label(frame, video):
+    label = data_dict[video][&quot;video_info_df&quot;][&quot;class_str_label&quot;][frame]
+    return 'Correct Label is &quot;{}&quot;'.format(rename_dict[label].replace('&lt;br&gt;', ''))
+</code></pre>
+
+<p>ここでは、app.pyのupdate_visual関数の中で作成したhtml.H4で指定している id=&ldquo;correct-label&rdquo; のchildren要素を更新することを示しています。</p>
+
+<p>インタラクティブに変更する際には入力と状態を定義する必要があり、Input, Stateをupdate_label関数の引数とします。</p>
+
+<p>その引数に対して、H4の
+Correct Label is {}
+の{}を更新することになります。</p>
+
+<p>このようにしてそれぞれのグラフでの値を変更していきます。</p>
 
 
 <footer class=" footline" >
@@ -409,6 +425,8 @@
             
                 
                     
+                        
+                        
                     
                 
                 
@@ -423,8 +441,21 @@
             
                 
                     
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
                         
-                        
+            
+            
+                
                     
                 
                 
@@ -469,23 +500,6 @@
             
         
                     
-                        
-            
-            
-                
-                    
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -494,8 +508,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -509,6 +521,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -525,6 +540,7 @@
             
             
                 
+                    
                     
                 
                 
@@ -549,10 +565,10 @@
 	 
 	 
 		
-			<a class="nav nav-prev" href="/dash-action-segmentation-demo/basics/anno/" title="Annotations"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/dash-action-segmentation-demo/content/staticfile/" title="Static File"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/dash-action-segmentation-demo/content/" title="Content" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/dash-action-segmentation-demo/content/staticfile/" title="Static File" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
