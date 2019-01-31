@@ -269,7 +269,6 @@ def update_image_src(frame, video):
 @app.server.route('{}<path:image_path>.jpg'.format(STATIC_PATH))
 def serve_image(image_path):
     img_name = '{}.jpg'.format(image_path)
-    #return flask.send_from_directory(STATIC_PATH, img_name)
     return flask.send_file(STATIC_PATH + img_name)
 
 # Graph View 

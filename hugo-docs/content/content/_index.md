@@ -10,10 +10,7 @@ pre: "<b>2. </b>"
 
 # Content
 
-このドキュメントではDashの[demoアプリ](https://dash-action-segmentation.appspot.com/)の作り方を説明していきます。
-
-### 処理の概要
-まずは全体の処理の流れを見ていきます。
+### コード内の処理の概要
 
 1. Dash から Flask のインスタンスにアクセス
 2. html likeなスタイルでページ内の配置を指定
