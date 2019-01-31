@@ -25,3 +25,8 @@ weight: 2
 ├── flex.app.yaml
 └── standard.app.yaml
 ```
+
+* flex.app.yaml
+* standard.app.yaml
+
+は作成したwebアプリをGoogle Cloud PlatformのGoogle App Engineで公開するのに当たって使用したファイルなのでローカル環境で使うので十分なのであれば気にしなくて大丈夫です。
