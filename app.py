@@ -69,7 +69,7 @@ def get_score_bar(data_dict, frame_num):
     return np.array(x_score), np.array(y_score), y_text, colors
 
 
-def get_heatmap(data_dict, frame_num):
+def get_heatmap(data_dict, frame_num, row_name:str, color_code:str):
     video_df = data_dict["video_info_df"]
     classes_padded = data_dict["classes_padded"]
     total_size = data_dict["total_size"]
@@ -77,8 +77,9 @@ def get_heatmap(data_dict, frame_num):
     # The list of scores
     score_list = []
     for el in classes_padded:
-        if el in video_df["class_str_top1"][frame_num]:
-            score_list.append(video_df["Top1_score"][frame_num])
+        if el in video_df[row_name][frame_num]:
+            value = 1 if row_name == "class_str_label" else video_df["Top1_score"][frame_num] 
+            score_list.append(value)
         else:
             score_list.append(0)
 
@@ -86,7 +87,7 @@ def get_heatmap(data_dict, frame_num):
     score_matrix = np.reshape(score_list, (-1, int(total_size/2)))
     score_matrix = np.flip(score_matrix, axis=0)
     # color scale
-    colorscale = [[0, '#ffffff'], [1,'#f71111']]
+    colorscale = [[0, '#ffffff'], [1,color_code]]
     font_colors = ['#3c3636', '#efecee']
     # Hover Text
     hover_text = ['{:.2f}% confidence'.format(score * 100) for score in score_list]
@@ -280,8 +281,8 @@ def update_visual(value):
                 style={'height': '30vh'},
                 id="heatmap-confidence"
             ),
-            html.H4(
-                style={'margin': '15px 20px 15px 20px'}, # top right bottom left
+            dcc.Graph(
+                style={'height': '30vh'},
                 id="correct-label"
             ),
             dcc.Graph(
@@ -291,12 +292,54 @@ def update_visual(value):
     ]
 
 # Update Correct Label
-@app.callback(Output("correct-label", "children"),
+@app.callback(Output("correct-label", "figure"),
              [Input("slider-frame-position", "value")],
              [State("dropdown-video-selection", "value")])
 def update_label(frame, video):
-    label = data_dict[video]["video_info_df"]["class_str_label"][frame]
-    return 'Correct Label is "{}"'.format(rename_dict[label].replace('<br>', ''))
+    layout = go.Layout(
+        title="Ground Truth",
+        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
+    )
+    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame, 'class_str_label', '#288FF7')
+
+    pt = ff.create_annotated_heatmap(
+            z=scoreMatrix,
+            annotation_text=classMatrix,
+            colorscale=colorScale,
+            font_colors=fontColors,
+            hoverinfo='text',
+            text=hoverText,
+            zmin=0,
+            zmax=1
+    )
+    pt.layout.title = layout.title
+    pt.layout.margin = layout.margin
+    return pt
+
+# Updating Heatmap
+@app.callback(Output("heatmap-confidence", "figure"),
+             [Input("slider-frame-position", "value")],
+             [State("dropdown-video-selection", "value")])
+def update_heatmap(frame, video):
+    layout = go.Layout(
+        title="Confidence Level of Action Classification",
+        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
+    )
+    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame, 'class_str_top1', '#f71111')
+
+    pt = ff.create_annotated_heatmap(
+            z=scoreMatrix,
+            annotation_text=classMatrix,
+            colorscale=colorScale,
+            font_colors=fontColors,
+            hoverinfo='text',
+            text=hoverText,
+            zmin=0,
+            zmax=1
+    )
+    pt.layout.title = layout.title
+    pt.layout.margin = layout.margin
+    return pt
 
 # Updating Bar Score
 @app.callback(Output("bar-score-graph", "figure"),
@@ -321,30 +364,6 @@ def update_score_bar(frame, video):
         )
     return go.Figure(data=[bar], layout=layout)
 
-# Updating Heatmap
-@app.callback(Output("heatmap-confidence", "figure"),
-             [Input("slider-frame-position", "value")],
-             [State("dropdown-video-selection", "value")])
-def update_heatmap(frame, video):
-    layout = go.Layout(
-        title="Confidence Level of Action Classification",
-        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
-    )
-    scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame)
-
-    pt = ff.create_annotated_heatmap(
-            z=scoreMatrix,
-            annotation_text=classMatrix,
-            colorscale=colorScale,
-            font_colors=fontColors,
-            hoverinfo='text',
-            text=hoverText,
-            zmin=0,
-            zmax=1
-    )
-    pt.layout.title = layout.title
-    pt.layout.margin = layout.margin
-    return pt
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
