@@ -231,6 +231,9 @@ app.layout = html.Div([
                 '''
                 ## Badminton Action Segmentation Demo View
                 To get started, select a footage you want to view, and choose the match video.
+                
+                If you want to know how to create this demonstration page, you can refer this
+                [explanation page](https://dychi.github.io/dash-action-segmentation-demo/).
                 '''
                 ))
             )
