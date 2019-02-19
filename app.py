@@ -261,7 +261,7 @@ def load_all_match():
     }
 
 
-# Images Display
+# Images Display mode: analysis
 @app.callback(Output("images", "src"),
              [Input("slider-frame-position", "value")],
              [State("dropdown-video-selection", "value")])
