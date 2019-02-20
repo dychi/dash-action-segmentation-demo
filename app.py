@@ -8,7 +8,7 @@ import flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, Event
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -146,16 +146,7 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Div([
-                html.Div([
-                    html.Img(
-                        style={
-                            'width': '90%',#600,
-                            'height': 'auto',#400,
-                            'margin': '30px 20px 15px 20px'
-                        },
-                        id="images",
-                        )
-                    ],
+                html.Div(
                     id='div-video-player',
                     style={
                         'color': 'rgb(255,255,255)',
@@ -204,7 +195,7 @@ app.layout = html.Div([
                     )
                 ],
                     style={'margin': '15px 20px 15px 20px'}
-                )
+                ),
             ],
                 className="six columns",
                 style={'margin-bottom': '20px'}
@@ -259,6 +250,22 @@ def load_all_match():
             'match_9': os.path.join(STATIC_PATH +'match_9/'),
             'match_10': os.path.join(STATIC_PATH +'match_10/'),
     }
+
+# Interval
+@app.callback(Output('div-video-player', 'children'),#Output('slider-frame-position', 'value'),
+             [Input("dropdown-play-selection", "value")])
+def update_frame_position_interval(play_mode):
+    if play_mode == 'analysis':
+        return [
+            html.Img(
+                style={
+                    'width': '90%',#600,
+                    'height': 'auto',#400,
+                    'margin': '30px 20px 15px 20px'
+                    },
+                id="images",
+                )
+            ]
 
 
 # Images Display mode: analysis
