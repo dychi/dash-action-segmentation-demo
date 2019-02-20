@@ -8,7 +8,7 @@ import flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, Event
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -152,9 +152,9 @@ app.layout = html.Div([
                             'width': '90%',#600,
                             'height': 'auto',#400,
                             'margin': '30px 20px 15px 20px'
-                        },
+                            },
                         id="images",
-                        )
+                    )
                     ],
                     id='div-video-player',
                     style={
@@ -163,7 +163,7 @@ app.layout = html.Div([
                     }
                 ),
                 html.Div([
-                    "Frame Position:",
+                    "Frame Position",
                     dcc.Slider(
                         min=0,
                         max=120,
@@ -171,9 +171,14 @@ app.layout = html.Div([
                         value=0,
                         updatemode='drag',
                         id='slider-frame-position'
-                        )
+                        ),
                     ],
                     style={'margin': '30px 30px 30px 30px'} # top right bottom left
+                ),
+                dcc.Interval(
+                    id='interval-component',
+                    n_intervals=0, # default: Off
+                    max_intervals=120
                 ),
                 html.Div([
                     "Video Selection",
@@ -193,18 +198,17 @@ app.layout = html.Div([
                 ),
                 html.Div([
                     "Play Mode",
-                    dcc.Dropdown(
+                    dcc.RadioItems(
                         options=[
-                            {'label': 'Auto Play mode', 'value': 'auto'},
-                            {'label': 'Analysis mode', 'value': 'analysis'}
+                            {'label': ' Manual mode', 'value': 60*60*1000},
+                            {'label': ' Auto mode', 'value': 1000},
                         ],
-                        value='analysis',
-                        id='dropdown-play-selection',
-                        clearable=False
+                        value=60*60*1000,
+                        id='radioitem-play-selection',
                     )
                 ],
                     style={'margin': '15px 20px 15px 20px'}
-                )
+                ),
             ],
                 className="six columns",
                 style={'margin-bottom': '20px'}
@@ -260,6 +264,17 @@ def load_all_match():
             'match_10': os.path.join(STATIC_PATH +'match_10/'),
     }
 
+# Interval
+@app.callback(Output('interval-component', 'interval'),
+             [Input('radioitem-play-selection', 'value')])
+def choose_update_interval(value):
+    return value
+
+# Update Slider Position
+@app.callback(Output('slider-frame-position', 'value'),
+             [Input('interval-component', 'n_intervals')])
+def slider_position(n):
+    return n
 
 # Images Display mode: analysis
 @app.callback(Output("images", "src"),
@@ -281,15 +296,15 @@ def serve_image(image_path):
 def update_visual(value):
     return [
             dcc.Graph(
-                style={'height': '30vh'},
+                style={'height': '25vh'},
                 id="heatmap-confidence"
             ),
             dcc.Graph(
-                style={'height': '30vh'},
+                style={'height': '20vh'},
                 id="correct-label"
             ),
             dcc.Graph(
-                style={'height': '45vh'},
+                style={'height': '40vh'},
                 id="bar-score-graph"
             )
     ]
@@ -301,7 +316,7 @@ def update_visual(value):
 def update_label(frame, video):
     layout = go.Layout(
         title="Ground Truth",
-        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
+        margin=go.layout.Margin(l=20, r=20, t=50, b=10)
     )
     scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame, 'class_str_label', '#288FF7')
 
@@ -325,8 +340,8 @@ def update_label(frame, video):
              [State("dropdown-video-selection", "value")])
 def update_heatmap(frame, video):
     layout = go.Layout(
-        title="Confidence Level of Action Classification",
-        margin=go.layout.Margin(l=20, r=20, t=57, b=30)
+        title="Predicted Confidence Level of Action Classification",
+        margin=go.layout.Margin(l=20, r=20, t=50, b=10)
     )
     scoreMatrix, classMatrix, colorScale, fontColors, hoverText = get_heatmap(data_dict[video], frame, 'class_str_top1', '#f71111')
 
