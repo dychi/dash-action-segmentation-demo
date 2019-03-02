@@ -27,9 +27,8 @@ def update_image_src(frame, video):
     frame_name = video_df["Frames"][frame]
     return url_dict[video] + frame_name
 
-@app.server.route('{}<path:image_path>.jpg'.format(STATIC_PATH))
+@app.server.route('{}<path:image_path>'.format(STATIC_PATH))
 def serve_image(image_path):
-    img_name = '{}.jpg'.format(image_path)
     return flask.send_file(STATIC_PATH + img_name)
 ```
 
